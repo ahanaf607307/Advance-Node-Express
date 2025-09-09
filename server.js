@@ -5,9 +5,13 @@ const fs = require("fs");
 const filePath = path.join(__dirname, "./db/todo.json");
 
 const server = http.createServer((req, res) => {
-  // res.end('Welcome to ToDo App server')
+  // get url with path name
+
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const pathUrl = url.pathname;
+
   // get data
-  if (req.url === "/todos" && req.method === "GET") {
+  if (pathUrl === "/todos" && req.method === "GET") {
     const data = fs.readFileSync(filePath, { encoding: "utf-8" });
     res.writeHead(201, {
       "content-type": "application/json",
@@ -49,14 +53,18 @@ const server = http.createServer((req, res) => {
     });
   }
   // get single todo  =>
-  else if (req.url === "/todo" && req.method === "GET") {
-    // const data = fs.readFileSync(filePath, { encoding: "utf-8" });
-    // res.writeHead(201, {
-    //   "content-type": "application/json",
-    // });
-    // res.end(data);
+  else if (pathUrl === "/todo" && req.method === "GET") {
+    const title = url.searchParams.get('title')
+    console.log(title)
+    const data = fs.readFileSync(filePath, { encoding: "utf-8" });
+    const parsedTodo = JSON.parse(data)
+    const findTodo = parsedTodo.find((todo) => todo.title === title)
+    const stringifyTodo = JSON.stringify(findTodo)
+    res.writeHead(201, {
+      "content-type": "application/json",
+    });
+    res.end(stringifyTodo);
 
-    res.end('Single todo')
   } else {
     res.end("Route not found ");
   }
