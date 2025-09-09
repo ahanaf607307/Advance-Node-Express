@@ -1,7 +1,7 @@
 [
   {
     "title": "prisma",
-    "body": "Learning Node",
+    "body": "Learning advance prisma",
     "createdAt": "5/18/25, 1:25:32 AM"
   },
   {
@@ -13,10 +13,5 @@
     "title": "ahanaf",
     "body": "Learning Ahanaf",
     "createdAt": "9/8/2025, 12:16:00 PM"
-  },
-  {
-    "title": "mongo",
-    "body": "Learning mongo",
-    "createdAt": "9/8/2025, 12:21:17 PM"
   }
 ]

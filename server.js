@@ -54,17 +54,57 @@ const server = http.createServer((req, res) => {
   }
   // get single todo  =>
   else if (pathUrl === "/todo" && req.method === "GET") {
-    const title = url.searchParams.get('title')
-    console.log(title)
+    const title = url.searchParams.get("title");
+    console.log(title);
     const data = fs.readFileSync(filePath, { encoding: "utf-8" });
-    const parsedTodo = JSON.parse(data)
-    const findTodo = parsedTodo.find((todo) => todo.title === title)
-    const stringifyTodo = JSON.stringify(findTodo)
+    const parsedTodo = JSON.parse(data);
+    const findTodo = parsedTodo.find((todo) => todo.title === title);
+    const stringifyTodo = JSON.stringify(findTodo);
     res.writeHead(201, {
       "content-type": "application/json",
     });
     res.end(stringifyTodo);
+  }
+  //   update single todo
+  else if (pathUrl === "/todos/update-todo" && req.method === "PATCH") {
+    const title = url.searchParams.get("title");
 
+    let userData = "";
+    req.on("data", (chunk) => {
+      userData = userData + chunk;
+    });
+
+    req.on("end", () => {
+      const { body } = JSON.parse(userData);
+      const allTodo = fs.readFileSync(filePath, { encoding: "utf-8" });
+      const parsedTodo = JSON.parse(allTodo);
+
+      const todoIndex = parsedTodo.findIndex((todo) => todo.title === title);
+
+      parsedTodo[todoIndex].body = body;
+
+      fs.writeFileSync(filePath, JSON.stringify(parsedTodo, null, 2), {
+        encoding: "utf8",
+      });
+
+      res.end(
+        JSON.stringify(
+          { title, body, createdAt: parsedTodo[todoIndex].createdAt },
+          null,
+          2
+        )
+      );
+    });
+  }
+  //   delete single todo
+  else if (pathUrl === "/todos/delete-todo" && req.method === "DELETE") {
+    const title = url.searchParams.get("title");
+    const data = fs.readFileSync(filePath, { encoding: "utf-8" });
+    const parsedTodo = JSON.parse(data);
+    const filterTodo = parsedTodo.filter((todo) => todo.title !== title);
+    console.log(filterTodo);
+    fs.writeFileSync(filePath, JSON.stringify(filterTodo, null, 2));
+    res.end("todo deleted successfully ");
   } else {
     res.end("Route not found ");
   }
